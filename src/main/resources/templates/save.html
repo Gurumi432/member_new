@@ -1,46 +1,57 @@
-<!DOCTYPE html>
+<!DOCTYPE html> <!-- HTML5 문서로 만들겠다고 선언 -->
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <title>save</title>
-    <!-- jquery cdn -->
-    <script
-            src="https://code.jquery.com/jquery-3.6.3.min.js"
+<!-- 코드는 영어로 작성 & Thymeleaf를 사용해서 Spring과 HTML을 연결 -->
+<head>     <!--브라우저정보-->
+    <meta charset="UTF-8"> <!--인코딩설정-->
+    <title>회원 프로젝트 : 회원가입 창</title> <!-- 브라우저 탭에 나올 제목-->
+    <script src="https://code.jquery.com/jquery-3.6.3.min.js"
             integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU="
             crossorigin="anonymous"></script>
-</head>
-<body>
-<!-- action속성: form에 작성한 데이터를 어디로 보낼지 지정 -->
-<form action="/member/save" method="post">
-    <!-- name속성: 서버로 전송할 때 변수이름의 역할 -->
+    <!-- src = jQuery : JavaScript관련보조도구 -->
+    <!-- integrity : 파일해킹여부검사 -->
+    <!-- crossorigin : CORS검사 (서버의 화이트리스트 안에 있는지 확인) --> </head>
+<body> <!-- 사용자직접상호작용파트(클릭,시각) -->
+<form action="/member/save" method="post"> <!-- form : 사용자의 입력공간 -->
+    <!-- action = 입력정보의 목적지 -->
+    <!-- method = Post : url에 입력정보노출방지 -->
     이메일: <input type="text" name="memberEmail" id="memberEmail" onblur="emailCheck()"> <br>
-    <p id="check-result"></p>
-    비밀번호: <input type="password" name="memberPassword"> <br>
-    이름: <input type="text" name="memberName"> <br>
-    <input type="submit" value="회원가입">
+    <!-- type = text : 텍스트입력공간 -->
+    <!-- name : 서버전송파라미터명 -->
+    <!-- id : 본입력창주소 -->
+    <!-- onblur = emailCheck() : 다른곳클릭시, 함수실행 -->
 
+    <p id="check-result"></p>
+    <!-- p : 중복검사메시지표시영역 -->
+    <!-- id : 본입력창주소 -->
+
+    비밀번호: <input type="password" name="memberPassword"> <br>
+    <!-- type : 비밀번호입력칸 (입력시문자숨김처리) -->
+    <!-- name : 서버전송파라미터명 -->
+
+    이름: <input type="text" name="memberName"> <br>
+    <!-- type : 이름입력칸 -->
+    <!-- name : 서버전송파라미터명 -->
+
+    <input type="submit" value="회원가입">
+    <!-- type : 폼데이터서버전송버튼 -->
+    <!-- value : 버튼표시텍스트 -->
 </form>
-</body>
-<script th:inline="javascript">
-    const emailCheck = () => {
-        const email = document.getElementById("memberEmail").value;
-        const checkResult = document.getElementById("check-result");
-        console.log("입력값: ", email);
-        $.ajax({
-            // 요청방식: post, url: "email-check", 데이터: 이메일
-            type: "post",
-            url: "/member/email-check",
-            data: {
-                "memberEmail": email
-            },
-            success: function(res) {
-                console.log("요청성공", res);
+</body> <!-- 사용자직접상호작용파트 (클릭, 시각) -->
+
+<script> // JavaScript영역시작
+
+    const emailCheck = () => { // 이메일중복검사수행함수정의
+        const email = document.getElementById("memberEmail").value; //memberEmail입력변수화
+        const checkResult = document.getElementById("check-result"); //checkResult입력변수화
+
+        //서버에 중복검사 요청
+        $.ajax({ //새로고침없이 서버데이터통신 설정
+            type: "post", url: "/member/email-check", data: {"memberEmail": email}, //발송형식, 목적지(중복검사장소), 발송대상
+            success: function(res) { //성공여부 검사
                 if (res == "ok") {
-                    console.log("사용가능한 이메일");
                     checkResult.style.color = "green";
                     checkResult.innerHTML = "사용가능한 이메일";
                 } else {
-                    console.log("이미 사용중인 이메일");
                     checkResult.style.color = "red";
                     checkResult.innerHTML = "이미 사용중인 이메일";
                 }
@@ -50,15 +61,7 @@
             }
         });
     }
+    // emailCheck함수정의종료
 </script>
+
 </html>
-
-
-
-
-
-
-
-
-
-

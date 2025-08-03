@@ -14,100 +14,69 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class MemberService {
     private final MemberRepository memberRepository;
-    public void save(MemberDTO memberDTO) {
-        // 1. dto -> entity 변환
-        // 2. repository의 save 메서드 호출
+
+    public void save(MemberDTO memberDTO) { //회원가입처리 (DTO→Entity변환 및 DB에 저장)
         MemberEntity memberEntity = MemberEntity.toMemberEntity(memberDTO);
         memberRepository.save(memberEntity);
-        // repository의 save메서드 호출 (조건. entity객체를 넘겨줘야 함)
     }
 
-    public MemberDTO login(MemberDTO memberDTO) {
-        /*
-            1. 회원이 입력한 이메일로 DB에서 조회를 함
-            2. DB에서 조회한 비밀번호와 사용자가 입력한 비밀번호가 일치하는지 판단
-         */
-        Optional<MemberEntity> byMemberEmail = memberRepository.findByMemberEmail(memberDTO.getMemberEmail());
-        if (byMemberEmail.isPresent()) {
-            // 조회 결과가 있다(해당 이메일을 가진 회원 정보가 있다)
-            MemberEntity memberEntity = byMemberEmail.get();
-            if (memberEntity.getMemberPassword().equals(memberDTO.getMemberPassword())) {
-                // 비밀번호 일치
-                // entity -> dto 변환 후 리턴
-                MemberDTO dto = MemberDTO.toMemberDTO(memberEntity);
-                return dto;
+    public MemberDTO login(MemberDTO memberDTO) { //로그인처리
+        Optional<MemberEntity> byMemberEmail = memberRepository.findByMemberEmail(memberDTO.getMemberEmail()); //이메일조회
+        if (byMemberEmail.isPresent()) { //있으면
+            MemberEntity memberEntity = byMemberEmail.get();//저장
+            if (memberEntity.getMemberPassword().equals(memberDTO.getMemberPassword())) { //비번일치
+                return MemberDTO.toMemberDTO(memberEntity); //Entity→DTO변환반환
             } else {
-                // 비밀번호 불일치(로그인실패)
-                return null;
+                return null; //비밀번호불일치
             }
         } else {
-            // 조회 결과가 없다(해당 이메일을 가진 회원이 없다)
-            return null;
+            return null; //회원없음
         }
     }
 
-    public List<MemberDTO> findAll() {
-        List<MemberEntity> memberEntityList = memberRepository.findAll();
-        List<MemberDTO> memberDTOList = new ArrayList<>();
-        for (MemberEntity memberEntity: memberEntityList) {
-            memberDTOList.add(MemberDTO.toMemberDTO(memberEntity));
-//            MemberDTO memberDTO = MemberDTO.toMemberDTO(memberEntity);
-//            memberDTOList.add(memberDTO);
+    public List<MemberDTO> findAll() { //전체회원조회
+        List<MemberEntity> memberEntityList = memberRepository.findAll(); //전체Entity조회
+        List<MemberDTO> memberDTOList = new ArrayList<>(); //새DTO리스트생성
+
+        for (MemberEntity memberEntity: memberEntityList) { //Entity→DTO변환
+            memberDTOList.add(MemberDTO.toMemberDTO(memberEntity)); //새DTO리스트 내부 채우기
         }
         return memberDTOList;
     }
 
-    public MemberDTO findById(Long id) {
-        Optional<MemberEntity> optionalMemberEntity = memberRepository.findById(id);
-        if (optionalMemberEntity.isPresent()) {
-//            MemberEntity memberEntity = optionalMemberEntity.get();
-//            MemberDTO memberDTO = MemberDTO.toMemberDTO(memberEntity);
-//            return memberDTO;
-            return MemberDTO.toMemberDTO(optionalMemberEntity.get());
-        } else {
-            return null;
-        }
+    public MemberDTO findById(Long id) { //특정회원조회
+        Optional<MemberEntity> optionalMemberEntity = memberRepository.findById(id); //ID조회
 
-    }
-
-    public MemberDTO updateForm(String myEmail) {
-        Optional<MemberEntity> optionalMemberEntity = memberRepository.findByMemberEmail(myEmail);
-        if (optionalMemberEntity.isPresent()) {
-            return MemberDTO.toMemberDTO(optionalMemberEntity.get());
+        if (optionalMemberEntity.isPresent()) { //회원존재
+            return MemberDTO.toMemberDTO(optionalMemberEntity.get()); //Entity→DTO변환반환
         } else {
-            return null;
+            return null; //회원없음
         }
     }
 
-    public void update(MemberDTO memberDTO) {
-        memberRepository.save(MemberEntity.toUpdateMemberEntity(memberDTO));
+    public MemberDTO updateForm(String myEmail) { //수정용정보조회
+        Optional<MemberEntity> optionalMemberEntity = memberRepository.findByMemberEmail(myEmail); //db이메일조회
+        if (optionalMemberEntity.isPresent()) { //있으면
+            return MemberDTO.toMemberDTO(optionalMemberEntity.get()); //Entity→DTO변환반환
+        } else {return null; //회원없음
+        }
     }
 
-    public void deleteById(Long id) {
-        memberRepository.deleteById(id);
+    public void update(MemberDTO memberDTO) { //회원정보수정
+        memberRepository.save(MemberEntity.toUpdateMemberEntity(memberDTO)); //수정Entity저장
     }
 
-    public String emailCheck(String memberEmail) {
-        Optional<MemberEntity> byMemberEmail = memberRepository.findByMemberEmail(memberEmail);
-        if (byMemberEmail.isPresent()) {
-            // 조회결과가 있다 -> 사용할 수 없다.
+    public void deleteById(Long id) { //회원삭제
+        memberRepository.deleteById(id); //ID삭제
+    }
+
+    public String emailCheck(String memberEmail) { //이메일중복검사
+        Optional<MemberEntity> byMemberEmail = memberRepository.findByMemberEmail(memberEmail); //이메일조회
+
+        if (byMemberEmail.isPresent()) { //이메일사용중
             return null;
         } else {
-            // 조회결과가 없다 -> 사용할 수 있다.
-            return "ok";
+            return "ok"; //사용가능
         }
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-

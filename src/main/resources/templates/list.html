@@ -15,7 +15,9 @@
     <th>상세조회</th>
     <th>삭제</th>
   </tr>
+  <!-- Thymeleaf의 th:each 속성이 서버에서 전달받은 memberList를 순회하면서 각 member 객체를 꺼내어 반복 처리합니다 -->
   <tr th:each="member: ${memberList}">
+>
     <td th:text="${member.id}"></td>
     <td th:text="${member.memberEmail}"></td>
     <td th:text="${member.memberPassword}"></td>
@@ -23,10 +25,8 @@
     <td>
       <!-- query string /member?id=1
           rest api /member/1 -->
+      <!-- 현재 member 객체의 id를 사용하여 동적으로 상세 조회 링크를 생성합니다 -->
       <a th:href="@{|/member/${member.id}|}">조회</a>
-    </td>
-    <td>
-      <a th:href="@{|/member/delete/${member.id}|}">삭제</a>
     </td>
   </tr>
 </table>
